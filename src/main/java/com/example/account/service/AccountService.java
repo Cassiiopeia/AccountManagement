@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.example.account.type.AccountStatus.IN_USE;
@@ -47,7 +48,6 @@ public class AccountService {
     }
 
 
-
     private void validateCreateAccount(AccountUser accountUser) {
         if (accountRepository.countByAccountUser(accountUser) == 10) {
             throw new AccountException(MAX_ACCOUNT_PER_USER_10);
@@ -75,7 +75,7 @@ public class AccountService {
 
 
     private void validateDeleteAccount(AccountUser accountUser, Account account) {
-        if (accountUser.getId() != account.getAccountUser().getId()) {
+        if (!Objects.equals(accountUser.getId(), account.getAccountUser().getId())) {
             throw new AccountException(USER_ACCOUNT_UN_MATCH);
         }
         if (account.getAccountStatus() == AccountStatus.UNREGISTERED) {
@@ -99,8 +99,7 @@ public class AccountService {
     }
 
     private AccountUser getAccountUser(Long userId) {
-        AccountUser accountUser = accountUserRepository.findById(userId)
+        return accountUserRepository.findById(userId)
                 .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
-        return accountUser;
     }
 }
